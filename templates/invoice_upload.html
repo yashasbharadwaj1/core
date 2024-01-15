@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Invoice</title>
+</head>
+<body>
+    <h2>Upload Invoice</h2>
+    <form action="{% url 'invoice:upload_invoice' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="pdfFile">Upload PDF File:</label>
+        <input type="file" name="pdfFile" accept=".pdf" required>
+        <br>
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
