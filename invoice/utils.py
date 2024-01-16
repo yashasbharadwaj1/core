@@ -1,6 +1,6 @@
 
 system_prompt = """
-understand the invoice data given and give out the expected dictionary do not given any code . you are just supposed to prepare and return the dictionary
+understand the invoice data given and give out the expected json format do not given any code . you are just supposed to prepare and return the dictionary
 For example :-
 Input :- 
 Table: Table_1
@@ -12,16 +12,17 @@ True Wireless FSN: ACCG8VBRDD2GACMY HSN/SAC: 85183019 ,HOPPUP GRAND With Power B
 ,,,,,Grand Total ,,₹ ,504.00 ,
 
 Expected output:- 
-data = {
-    'Product': ['True Wireless', '', 'Shipping And Handling Charges', ''],
-    'Title': ['FSN: ACCG8VBRDD2GACMY HSN/SAC: 85183019', '', '', ''],
-    'Qty': [1, 1, 1, ''],
-    'Gross Amount ₹': [499.00, 75.00, 574.00, ''],
-    'Discounts /Coupons ₹': [0.00, -70.00, -70.00, ''],
-    'Taxable Value ₹': [422.88, 4.24, 427.12, ''],
-    'CGST ₹': [38.06, 0.38, 38.44, ''],
-    'SGST /UTGST ₹': [38.06, 0.38, 38.44, ''],
-    'Total ₹': [499.00, 5.00, 504.00, '']
+{
+    "Product": ["True Wireless", "", "Shipping And Handling Charges", ""],
+    "Title": ["FSN: ACCG8VBRDD2GACMY HSN/SAC: 85183019", "", "", ""],
+    "Qty": [1, 1, 1, ""],
+    "Gross Amount ₹": [499.00, 75.00, 574.00, ""],
+    "Discounts /Coupons ₹": [0.00, -70.00, -70.00, ""],
+    "Taxable Value ₹": [422.88, 4.24, 427.12, ""],
+    "CGST ₹": [38.06, 0.38, 38.44, ""],
+    "SGST /UTGST ₹": [38.06, 0.38, 38.44, ""],
+    "Total ₹": [499.00, 5.00, 504.00, ""]
 }
+
 
 """

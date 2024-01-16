@@ -17,7 +17,7 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+import threading
 import openai
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -34,9 +34,10 @@ s3_client = boto3.client(
     region_name=AWS_REGION,
 )
 
-import pandas as pd 
-import tempfile 
-import os 
+import pandas as pd
+import tempfile
+import os
+
 
 def generate_excel_file(data, filename):
     df = pd.DataFrame(data)
@@ -45,6 +46,7 @@ def generate_excel_file(data, filename):
     excel_file_path = os.path.join(temp_dir, f"{filename}.xlsx")
     df.to_excel(excel_file_path, index=False)
     return excel_file_path
+
 
 @api_view(["POST", "GET"])
 def upload_invoice(request):
@@ -60,7 +62,7 @@ def upload_invoice(request):
 
 def call_gpt(csv):
     user_prompt = f"""
-    understand the invoice data given and give out the expected dictionary
+    understand the invoice data given and give out the expected json . json only please
     Input :- 
     {csv}
 
@@ -87,16 +89,20 @@ def handle_csv_upload(request):
             filename = data.get("file_name", "output")
             # print(filename)
             # print(csv_data)
-            desired_dict = call_gpt(csv_data)
-            # print(desired_dict)
-            excel_file_path = generate_excel_file(desired_dict, filename)
-            # print(excel_file_path)
-            try:
-                s3_client.upload_fileobj(excel_file_path, EXCEL_REPORT_BUCKET, f"{filename}.xlsx")
+            desired_dict_str = call_gpt(csv_data)
+            print(desired_dict_str)
+
+            def perform_task():
+                data = json.loads(desired_dict_str)
+                excel_file_path = generate_excel_file(data, filename)
+                print(excel_file_path)
+                s3_client.upload_file(
+                    excel_file_path, EXCEL_REPORT_BUCKET, f"{filename}.xlsx"
+                )
                 print("Upload successful")
-            except Exception as e:
-                print(f"Error uploading to S3: {str(e)}")
-               
+
+            task_thread = threading.Thread(target=perform_task)
+            task_thread.start()
 
             return JsonResponse({"status": "success"})
         except Exception as e:
